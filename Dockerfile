@@ -16,20 +16,12 @@ RUN nginx -t
 RUN cd /var/www/html && composer install && php artisan key:generate
 RUN chmod -R 775 /var/www/html/ && chown -R root:www-data /var/www/html
 RUN chmod -R 775 /var/www/html/* && chown -R root:www-data /var/www/html/*
-# Expose ports.
-# EXPOSE 8000
+
+RUN ln -s /var/lib/mysql/mysql.sock /tmp/mysql.sock
+RUN service mysql restart
 
 # Expose ports.
-# RUN sed -i "s/.*bind-address.*/bind-address = 0.0.0.0/" /etc/mysql/mysql.conf.d/mysqld.cnf
-# RUN mysql -u root << EOF 
-# CREATE DATABASE IF NOT EXISTS test;
-# CREATE USER IF NOT EXISTS 'user'@'%' IDENTIFIED BY 'password'; 
-# GRANT ALL PRIVILEGES ON * . * TO 'user'@'%'; 
-# FLUSH PRIVILEGES; 
-# EOF
 
-# RUN cd /var/www/html && php artisan migrate --seed
-
-EXPOSE 80
+EXPOSE 81
 # RUN PHP and NGINX
 CMD service php7.2-fpm start && nginx
